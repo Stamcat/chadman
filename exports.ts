@@ -2,6 +2,7 @@
 export const EXPORTS = {
     Components: "components",
     Utilities: "utilities",
+    Theme: "styles/theme",
 } as const;
 
 export const PACKAGE_EXPORTS = {
@@ -12,6 +13,10 @@ export const PACKAGE_EXPORTS = {
     [`./${EXPORTS.Utilities}`]: {
         types: `./src/${EXPORTS.Utilities}/index.d.ts`,
         default: "./Utilities.esm.js",
+    },
+    "./theme": {
+        types: `./src/${EXPORTS.Theme}/index.d.ts`,
+        default: "./Theme.esm.js",
     },
     "./styles/tokens": {
         default: "./src/styles/_tokens.scss",

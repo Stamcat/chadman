@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 import { Loader2, Mail, Plus, Trash2 } from "lucide-react"
 import type { CSSProperties } from "react"
-import { Button } from "@/components/Button/Button"
+import { Button } from "@/components/atoms/Button/Button"
 
 const rowStyle: CSSProperties = {
   display: "inline-flex",

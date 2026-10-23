@@ -27,7 +27,7 @@ Behavior notes:
   | `ghost` | transparent (hover: `--muted`) | `--foreground` |
   | `destructive` | tinted `--destructive` (via `color-mix()`) | `--destructive` |
   | `link` | transparent | `--primary` |
-- Base button styles (`%button-base`) live in `src/styles/_button.scss`, a Sass placeholder extended by `.button` in `Button.scss` — not the bare `button` element. Plain `<button>` markup without the `.button` class receives no library styling, and other components can `@use "../../styles/button"` and `@extend %button-base;` to reuse it.
+- Base button styles (`%button-base`) live in `src/styles/_button.scss`, a Sass placeholder extended by `.button` in `Button.scss` — not the bare `button` element. Plain `<button>` markup without the `.button` class receives no library styling, and other components can `@use "../../../styles/button"` (relative path depends on folder depth) and `@extend %button-base;` to reuse it.
 - `className` is preserved and merged after the component's own classes.
 - When `size` is a named size, its scale is looked up in `SIZE_SCALE`; when `size` is a number, it's used directly as the scale. Either way, Button sets a single `--button-size` CSS variable inline; all scaling math lives in SCSS:
   - `height: calc(2rem * var(--button-size, 1))`

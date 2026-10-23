@@ -28,6 +28,33 @@ Semantic tokens (prefer these over anything else):
 
 Dark mode is a `.dark` class applied to an ancestor element (typically `<html>` or `<body>`); it redefines the same custom properties, so components never need dark-mode-specific styling of their own.
 
+## Runtime theming
+
+To override design tokens or per-component styles at runtime (rather than editing Sass), wrap the app in `ThemeProvider` from the `./theme` subpath instead of hand-writing `<style>`/CSS overrides:
+
+```tsx
+import { ThemeProvider } from "@stamcat/chadman/theme";
+
+<ThemeProvider theme={{ colors: { "--primary": "oklch(0.6 0.2 250)" } }}>
+  <App />
+</ThemeProvider>
+```
+
+See `src/styles/theme/AGENTS.md` for the full `Theme` shape (`colors`, `root`, `components`) and hard rules (never pass untrusted/user-supplied strings into it).
+
+## Build-time token overrides
+
+To set different *initial* token values at build time (no runtime JS, no flash-of-unstyled-content), configure `src/styles/_tokens.scss` as a Sass module instead of importing it plain:
+
+```scss
+@use "@stamcat/chadman/styles/tokens" with (
+  $primary: oklch(0.6 0.2 250),
+  $primary-dark: oklch(0.7 0.2 250)
+);
+```
+
+Every token has a matching `!default` Sass variable (light value as `$token-name`, dark-mode override as `$token-name-dark` where one exists — see `_tokens.scss` for the full list). This is a *different* mechanism than `ThemeProvider` above: it only changes the compiled-in starting value, and can't switch themes at runtime. Use `ThemeProvider` for runtime/user-driven theming; use this only for a static rebrand that never needs to change without a rebuild.
+
 ## Style mapping (read this before styling anything)
 
 Chadman uses Sass + plain CSS custom properties, not Tailwind. A token name like `--primary` or `--radius-lg` doesn't describe *when* to use it the way a Tailwind utility class does (`bg-brand-primary` tells you both the value and the intent in the class name itself). With `var(--token)`, that intent has to be documented explicitly, or it's lost. Use the decision tables below instead of guessing from a token's name alone.

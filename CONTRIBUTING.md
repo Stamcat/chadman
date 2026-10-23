@@ -1,0 +1,62 @@
+# Contributing to chadman
+
+This file is the canonical source of AI (and human) coding instructions for working on chadman's
+**own source** — i.e. you are editing code inside this repo (`src/`, `scripts/`, build config),
+not writing an application that merely depends on `@stamcat/chadman`.
+
+## Three rulesets — know which one applies
+
+This repo carries three distinct instruction sets, scoped by *who is reading them* and *which
+files they're touching*. They're deliberately independent: a rule in one never implies the
+opposite rule is wrong in another, because they describe different audiences.
+
+| Ruleset | Audience | Canonical file | Applies to |
+| --- | --- | --- | --- |
+| Consuming application | A team building an app that installs `@stamcat/chadman` as an npm dependency | [`AGENTS.md`](./AGENTS.md) | Code in some *other* repo that imports from `@stamcat/chadman/*` |
+| Figma Make | Figma Make, generating/editing designs from a kit that includes chadman | [`guidelines/Guidelines.md`](./guidelines/Guidelines.md) | The `guidelines/` folder only — built from `AGENTS.md` files, never hand-duplicated |
+| **Library contribution (this file)** | Anyone changing chadman's own source | **`CONTRIBUTING.md`** (this file) + `.github/skills/*` | `src/`, `scripts/`, `vite.config.ts`, `exports.ts`, and other repo-internal files |
+
+Why they can disagree: the consuming-app `AGENTS.md` tells a consumer, for example, "always import
+components from their documented subpath" and "use the design tokens instead of hardcoded colors"
+— rules about *consuming* the published package. This file and its skills tell a contributor how
+the component that subpath resolves to is actually *built* (BEM class naming, `@layer
+chadman-component` wrapping, the `--{component}-size` scaling pattern, SCSS vs. CSS Modules) —
+internal implementation details a consuming app never needs to know and must never depend on.
+Figma Make's `guidelines/` is narrower still: it's a build artifact of the consuming-app ruleset
+(each `guidelines/components/{name}.md` is a router stub inlined with that component's `AGENTS.md`
+at build time — see `scripts/buildPackage.ts`), not a separately maintained set of rules.
+
+If you're unsure which ruleset a file falls under: if the change is inside this repo's `src/` (or
+build tooling) implementing or restructuring a component, use this file's skills. If the change is
+only to documentation describing how an external consumer should *use* a component (prop tables,
+examples), that's the `AGENTS.md`/component `AGENTS.md` ruleset, even though you're still editing
+files in this repo.
+
+## Topic skills
+
+Detailed conventions for contributing to chadman's own source live under `.github/skills/` rather
+than inline here, so this file stays a short index. Read the linked skill before touching the
+corresponding area:
+
+| Topic | Skill |
+| --- | --- |
+| Atomic design levels (quarks→pages), product tagging/barrel policy for templates & pages, folder structure, export wiring, prop design, the size-scaling pattern, shadcn-first sourcing, documentation checklist | [component-architecture](.github/skills/component-architecture/SKILL.md) |
+| Sass/BEM conventions, design tokens, cascade layers (`@layer chadman-component`) | [styling](.github/skills/styling/SKILL.md) |
+| Semantic/keyboard/ARIA/contrast requirements, verifying with Storybook's a11y addon | [accessibility](.github/skills/accessibility/SKILL.md) |
+
+When adding a new cross-cutting library-contribution convention, add a new skill folder rather
+than growing this file.
+
+## Commands
+
+- `npm run type-check` — `tsc --noEmit` against the library source.
+- `npm run lint` — `oxlint` (the only linter configured in this repo; no ESLint/Prettier).
+- `npm run storybook` — serves stories at `localhost:6006`; use the Accessibility addon panel to
+  verify any new/changed component per [accessibility](.github/skills/accessibility/SKILL.md).
+- `npm run build-storybook` — runs `type-check:storybook` first, then builds static Storybook.
+- `npm run build` — full package build (`tsc -p tsconfig-build.json && vite build && tsx
+  buildPackage.ts`); run this before assuming a new component's subpath export/guideline-inlining
+  wiring actually works.
+
+Run `type-check`, `lint`, and (if touching a component) `build-storybook` before finishing any
+library-contribution change.

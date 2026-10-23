@@ -1,29 +1,105 @@
 // Design tokens — single source of truth for colors and shape, shared by every component.
+// Every value below is a configurable Sass variable (`!default`), so a consuming app can set
+// build-time defaults with zero runtime JS/FOUC via Sass module config, e.g.:
+//   @use "@stamcat/chadman/styles/tokens" with ($primary: oklch(0.6 0.2 250), $primary-dark: oklch(0.7 0.2 250));
+// This is a *different* mechanism than ThemeProvider (`@stamcat/chadman/theme`) — it only changes
+// the initial custom property value; ThemeProvider is still how you switch themes at runtime.
+// Defaults are quoted strings (not bare oklch()/color values) so Dart Sass never parses them as
+// Color objects and reformats their notation on output — this keeps the exact original literal
+// text. A consumer overriding one is free to pass either a string or a real color/dimension value;
+// `#{}` interpolation below emits either one as plain CSS either way.
+// Declares the cascade layer order once: chadman-theme (ThemeProvider overrides) always wins over
+// chadman-component (component stylesheets), which always wins over chadman-base (these defaults)
+// — regardless of each stylesheet's load order, as long as this file loads first (already required
+// by guidelines/setup.md, since every component depends on these tokens anyway).
+@layer chadman-base, chadman-component, chadman-theme;
+
+$background: "oklch(1 0 0)" !default;
+$background-dark: "oklch(0.145 0 0)" !default;
+$foreground: "oklch(0.145 0 0)" !default;
+$foreground-dark: "oklch(0.985 0 0)" !default;
+$card: "oklch(1 0 0)" !default;
+$card-dark: "oklch(0.205 0 0)" !default;
+$card-foreground: "oklch(0.145 0 0)" !default;
+$card-foreground-dark: "oklch(0.985 0 0)" !default;
+$popover: "oklch(1 0 0)" !default;
+$popover-dark: "oklch(0.205 0 0)" !default;
+$popover-foreground: "oklch(0.145 0 0)" !default;
+$popover-foreground-dark: "oklch(0.985 0 0)" !default;
+$primary: "oklch(0.205 0 0)" !default;
+$primary-dark: "oklch(0.922 0 0)" !default;
+$primary-foreground: "oklch(0.985 0 0)" !default;
+$primary-foreground-dark: "oklch(0.205 0 0)" !default;
+$secondary: "oklch(0.97 0 0)" !default;
+$secondary-dark: "oklch(0.269 0 0)" !default;
+$secondary-foreground: "oklch(0.205 0 0)" !default;
+$secondary-foreground-dark: "oklch(0.985 0 0)" !default;
+$muted: "oklch(0.97 0 0)" !default;
+$muted-dark: "oklch(0.269 0 0)" !default;
+$muted-foreground: "oklch(0.556 0 0)" !default;
+$muted-foreground-dark: "oklch(0.708 0 0)" !default;
+$accent: "oklch(0.97 0 0)" !default;
+$accent-dark: "oklch(0.269 0 0)" !default;
+$accent-foreground: "oklch(0.205 0 0)" !default;
+$accent-foreground-dark: "oklch(0.985 0 0)" !default;
+$destructive: "oklch(0.577 0.245 27.325)" !default;
+$destructive-dark: "oklch(0.704 0.191 22.216)" !default;
+$border: "oklch(0.922 0 0)" !default;
+$border-dark: "oklch(1 0 0 / 10%)" !default;
+$input: "oklch(0.922 0 0)" !default;
+$input-dark: "oklch(1 0 0 / 15%)" !default;
+$ring: "oklch(0.708 0 0)" !default;
+$ring-dark: "oklch(0.556 0 0)" !default;
+$chart-1: "oklch(0.87 0 0)" !default;
+$chart-2: "oklch(0.556 0 0)" !default;
+$chart-3: "oklch(0.439 0 0)" !default;
+$chart-4: "oklch(0.371 0 0)" !default;
+$chart-5: "oklch(0.269 0 0)" !default;
+$radius: "0.625rem" !default;
+$sidebar: "oklch(0.985 0 0)" !default;
+$sidebar-dark: "oklch(0.205 0 0)" !default;
+$sidebar-foreground: "oklch(0.145 0 0)" !default;
+$sidebar-foreground-dark: "oklch(0.985 0 0)" !default;
+$sidebar-primary: "oklch(0.205 0 0)" !default;
+$sidebar-primary-dark: "oklch(0.488 0.243 264.376)" !default;
+$sidebar-primary-foreground: "oklch(0.985 0 0)" !default;
+$sidebar-primary-foreground-dark: "oklch(0.985 0 0)" !default;
+$sidebar-accent: "oklch(0.97 0 0)" !default;
+$sidebar-accent-dark: "oklch(0.269 0 0)" !default;
+$sidebar-accent-foreground: "oklch(0.205 0 0)" !default;
+$sidebar-accent-foreground-dark: "oklch(0.985 0 0)" !default;
+$sidebar-border: "oklch(0.922 0 0)" !default;
+$sidebar-border-dark: "oklch(1 0 0 / 10%)" !default;
+$sidebar-ring: "oklch(0.708 0 0)" !default;
+$sidebar-ring-dark: "oklch(0.556 0 0)" !default;
+$font-sans: "'Geist Variable', sans-serif" !default;
+
+@layer chadman-base {
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
+  --background: #{$background};
+  --foreground: #{$foreground};
+  --card: #{$card};
+  --card-foreground: #{$card-foreground};
+  --popover: #{$popover};
+  --popover-foreground: #{$popover-foreground};
+  --primary: #{$primary};
+  --primary-foreground: #{$primary-foreground};
+  --secondary: #{$secondary};
+  --secondary-foreground: #{$secondary-foreground};
+  --muted: #{$muted};
+  --muted-foreground: #{$muted-foreground};
+  --accent: #{$accent};
+  --accent-foreground: #{$accent-foreground};
+  --destructive: #{$destructive};
+  --border: #{$border};
+  --input: #{$input};
+  --ring: #{$ring};
+  --chart-1: #{$chart-1};
+  --chart-2: #{$chart-2};
+  --chart-3: #{$chart-3};
+  --chart-4: #{$chart-4};
+  --chart-5: #{$chart-5};
+  --radius: #{$radius};
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -31,48 +107,49 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-  --font-sans: 'Geist Variable', sans-serif;
+  --sidebar: #{$sidebar};
+  --sidebar-foreground: #{$sidebar-foreground};
+  --sidebar-primary: #{$sidebar-primary};
+  --sidebar-primary-foreground: #{$sidebar-primary-foreground};
+  --sidebar-accent: #{$sidebar-accent};
+  --sidebar-accent-foreground: #{$sidebar-accent-foreground};
+  --sidebar-border: #{$sidebar-border};
+  --sidebar-ring: #{$sidebar-ring};
+  --font-sans: #{$font-sans};
   --font-heading: var(--font-sans);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --background: #{$background-dark};
+  --foreground: #{$foreground-dark};
+  --card: #{$card-dark};
+  --card-foreground: #{$card-foreground-dark};
+  --popover: #{$popover-dark};
+  --popover-foreground: #{$popover-foreground-dark};
+  --primary: #{$primary-dark};
+  --primary-foreground: #{$primary-foreground-dark};
+  --secondary: #{$secondary-dark};
+  --secondary-foreground: #{$secondary-foreground-dark};
+  --muted: #{$muted-dark};
+  --muted-foreground: #{$muted-foreground-dark};
+  --accent: #{$accent-dark};
+  --accent-foreground: #{$accent-foreground-dark};
+  --destructive: #{$destructive-dark};
+  --border: #{$border-dark};
+  --input: #{$input-dark};
+  --ring: #{$ring-dark};
+  --chart-1: #{$chart-1};
+  --chart-2: #{$chart-2};
+  --chart-3: #{$chart-3};
+  --chart-4: #{$chart-4};
+  --chart-5: #{$chart-5};
+  --sidebar: #{$sidebar-dark};
+  --sidebar-foreground: #{$sidebar-foreground-dark};
+  --sidebar-primary: #{$sidebar-primary-dark};
+  --sidebar-primary-foreground: #{$sidebar-primary-foreground-dark};
+  --sidebar-accent: #{$sidebar-accent-dark};
+  --sidebar-accent-foreground: #{$sidebar-accent-foreground-dark};
+  --sidebar-border: #{$sidebar-border-dark};
+  --sidebar-ring: #{$sidebar-ring-dark};
+}
 }

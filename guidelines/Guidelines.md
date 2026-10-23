@@ -1,6 +1,8 @@
 # Chadman Design System Guidelines
 
-Chadman is a small, atomic-design React component library built on Base UI and Sass. It ships CSS custom properties as design tokens, one component so far (`Button`), and framework-agnostic logging utilities.
+Chadman is a small, atomic-design React component library built on Base UI and Sass. It ships CSS custom properties as design tokens, a runtime `ThemeProvider` for overriding them, one component so far (`Button`), and framework-agnostic logging utilities.
+
+This folder is a build artifact of the consuming-application ruleset (`AGENTS.md` at the repo root), generated for [Figma Make](https://help.figma.com/hc/en-us/articles/39241689698839-Get-started-with-Make-kits) specifically — it is not a separately maintained ruleset. If you're changing chadman's own source rather than designing with it in a kit, see [`CONTRIBUTING.md`](../CONTRIBUTING.md) instead.
 
 ## Reading order
 
@@ -10,7 +12,8 @@ Chadman is a small, atomic-design React component library built on Base UI and S
 3. `components/overview.md` — the component catalog
 
 **Read on-demand:**
-- `components/{name}.md` — read BEFORE using that component. These files route to the component's own `AGENTS.md`, co-located with its source in the package (for example `src/components/Button/AGENTS.md`) — that `AGENTS.md` is the single source of truth for that component's props, behavior, and examples, so read it in full.
+- `components/{name}.md` — read BEFORE using that component. These files route to the component's own `AGENTS.md`, co-located with its source in the package (for example `src/components/atoms/Button/AGENTS.md`) — that `AGENTS.md` is the single source of truth for that component's props, behavior, and examples, so read it in full.
+- `setup.md`'s "Runtime theming" section routes to `src/styles/theme/AGENTS.md` — read it in full BEFORE using `ThemeProvider`.
 
 ## Rules
 

@@ -1,6 +1,7 @@
 // Relies on the design tokens (CSS custom properties) defined globally in src/index.scss.
-@use "../../styles/button";
+@use "../../../styles/button";
 
+@layer chadman-component {
 .button {
   @extend %button-base;
 
@@ -91,4 +92,5 @@
   &--size-icon-sm {
     border-radius: min(var(--radius-md), 12px);
   }
+}
 }

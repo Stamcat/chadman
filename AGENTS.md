@@ -1,8 +1,12 @@
 # AI Agent Integration Guide for chadman
 
-This document explains how code-generation agents should use this library safely and correctly.
+This document explains how code-generation agents should use this library safely and correctly —
+it's written for an **application that consumes** `@stamcat/chadman` as a dependency. If you're
+instead changing chadman's own source (this repo), use [`CONTRIBUTING.md`](./CONTRIBUTING.md) and
+its linked skills instead — that ruleset covers implementation details (SCSS/BEM conventions,
+cascade layers, component folder structure) that a consuming app must never depend on.
 
-- **Component-specific guidelines** (props, behavior notes, examples): each component has its own `AGENTS.md` co-located with its source, for example `src/components/Button/AGENTS.md`.
+- **Component-specific guidelines** (props, behavior notes, examples): each component has its own `AGENTS.md` co-located with its source, for example `src/components/atoms/Button/AGENTS.md`.
 
 ## Quick Reference
 
@@ -18,6 +22,12 @@ Framework-agnostic helpers (including the logger — see `src/utilities/logging/
 
 ```ts
 import { log } from "@stamcat/chadman/utilities";
+```
+
+A runtime theming API (override design tokens and per-component styles without touching Sass — see `src/styles/theme/AGENTS.md`) is published under the `./theme` subpath:
+
+```tsx
+import { ThemeProvider } from "@stamcat/chadman/theme";
 ```
 
 ## Hard Rules for Agents
