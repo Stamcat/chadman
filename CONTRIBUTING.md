@@ -43,6 +43,7 @@ corresponding area:
 | Atomic design levels (quarks→pages), product tagging/barrel policy for templates & pages, folder structure, export wiring, prop design, the size-scaling pattern, shadcn-first sourcing, documentation checklist | [component-architecture](.github/skills/component-architecture/SKILL.md) |
 | Sass/BEM conventions, design tokens, cascade layers (`@layer chadman-component`) | [styling](.github/skills/styling/SKILL.md) |
 | Semantic/keyboard/ARIA/contrast requirements, verifying with Storybook's a11y addon | [accessibility](.github/skills/accessibility/SKILL.md) |
+| Inline code comment discipline — when one's warranted, length limit, where longer rationale belongs | [code-comments](.github/skills/code-comments/SKILL.md) |
 
 When adding a new cross-cutting library-contribution convention, add a new skill folder rather
 than growing this file.

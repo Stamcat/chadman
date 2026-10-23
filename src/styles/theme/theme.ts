@@ -51,7 +51,6 @@ export function themeBuilder(theme: Theme, options?: ThemeBuilderOptions): strin
         return rules;
     }
 
-    // Layer order is already declared once, globally, in _tokens.scss — this only needs to
-    // place these rules into the chadman-theme layer, not redeclare the order.
-    return `@layer chadman-theme {\n${rules}\n}`;
+    // Redeclared here (not just in _tokens.scss) since this style tag can be hoisted earlier in <head> — see AGENTS.md.
+    return `@layer chadman-base, chadman-component, chadman-theme;\n@layer chadman-theme {\n${rules}\n}`;
 }

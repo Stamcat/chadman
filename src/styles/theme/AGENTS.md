@@ -32,13 +32,18 @@ import { ThemeProvider } from "@stamcat/chadman/theme";
 
 ## Cascade layers
 
-`src/styles/_tokens.scss` declares the layer order once — `@layer chadman-base, chadman-component,
+`src/styles/_tokens.scss` declares the layer order — `@layer chadman-base, chadman-component,
 chadman-theme;` — and wraps its own `:root`/`.dark` defaults in `chadman-base`. Component
 stylesheets (e.g. `Button.scss`, `_button.scss`) wrap their rules in `chadman-component`.
 `ThemeProvider`'s generated CSS is wrapped in `chadman-theme` by default (`layered: true`), which
-always wins over both — regardless of load order — as long as `_tokens.scss` is imported (already
-required by every consumer, see `guidelines/setup.md`). Set `layered: false` only if `_tokens.scss`
-isn't loaded; overrides then fall back to plain unlayered CSS, relying on DOM/source order to win.
+always wins over both — regardless of load order — because `themeBuilder()` redeclares that same
+`@layer chadman-base, chadman-component, chadman-theme;` statement ahead of its own rules. This
+redeclaration matters: layer order is decided by each name's first appearance across every
+stylesheet in the document, and React's style precedence hoisting (`ThemeProviderProps.precedence`,
+default `"high"`) can insert `ThemeProvider`'s `<style>` before `_tokens.scss` has been parsed —
+without the redeclaration, `chadman-theme` would end up the first-seen (lowest-priority) layer
+instead of the last. Set `layered: false` only if `_tokens.scss` isn't loaded at all; overrides
+then fall back to plain unlayered CSS, relying on DOM/source order to win.
 
 ## Build-time vs. runtime overrides
 
