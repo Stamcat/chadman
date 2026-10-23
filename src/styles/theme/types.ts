@@ -78,6 +78,13 @@ export type ThemeProviderProps = {
     children?: ReactNode;
     /** Default: "high". Set to false to opt out of React's style hoisting. */
     precedence?: string | false;
+    /**
+     * Default: derived from a hash of the generated CSS, so distinct themes always get distinct
+     * hrefs. React dedupes hoisted `<style href>` resources by href and never updates an
+     * already-mounted one's content, so passing a fixed `href` yourself means switching `theme` at
+     * runtime won't visibly update the page — only override this if `theme` is static for the life
+     * of the app.
+     */
     href?: string;
     /**
      * Default: true. Writes overrides into the `chadman-theme` layer, which `_tokens.scss` already

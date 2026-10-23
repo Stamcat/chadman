@@ -1,5 +1,12 @@
 import type { Preview } from '@storybook/react-vite'
 import '../src/index.scss'
+import { ThemeProvider } from '../src/styles/theme'
+import { tealTheme } from '../src/stories/examples/themes/teal'
+
+const THEMES = {
+  default: undefined,
+  teal: tealTheme,
+} as const
 
 const preview: Preview = {
   parameters: {
@@ -17,6 +24,28 @@ const preview: Preview = {
       test: 'todo'
     }
   },
+  globalTypes: {
+    theme: {
+      description: 'Runtime theme (ThemeProvider)',
+      toolbar: {
+        title: 'Theme',
+        icon: 'paintbrush',
+        items: Object.keys(THEMES).map((value) => ({ value, title: value })),
+        dynamicTitle: true,
+      },
+    },
+  },
+  initialGlobals: {
+    theme: 'default',
+  },
+  decorators: [
+    (Story, context) => (
+      <ThemeProvider theme={THEMES[context.globals.theme as keyof typeof THEMES]}>
+        <Story />
+      </ThemeProvider>
+    ),
+  ],
 };
+
 
 export default preview;

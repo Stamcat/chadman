@@ -100,3 +100,13 @@ export function cssObjectToCssText(selector: string, value: CSSObject): string {
     const baseRule = declarations.length > 0 ? `${selector} { ${declarations.join(" ")} }` : "";
     return [baseRule, ...nestedRules].filter(Boolean).join("\n");
 }
+
+// djb2 — not cryptographic, just a stable cache key so identical CSS text always hashes the same.
+export function hashString(value: string): string {
+    let hash = 5381;
+    for (let i = 0; i < value.length; i++) {
+        hash = (hash * 33) ^ value.charCodeAt(i);
+    }
+    return (hash >>> 0).toString(36);
+}
+

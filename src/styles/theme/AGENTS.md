@@ -29,6 +29,13 @@ import { ThemeProvider } from "@stamcat/chadman/theme";
   element and the BEM class, since `<button>` is also a native HTML tag).
 - `ThemeProvider` renders a `<style>` tag via React's style hoisting (`precedence="high"` by
   default) and otherwise behaves as a pass-through (`children` render unchanged).
+- `href` defaults to a hash of the generated CSS text, not a fixed string. React dedupes hoisted
+  `<style href>` resources by `href` and never updates an already-mounted one's content — a fixed
+  default `href` would mean switching `theme` at runtime (e.g. a Storybook toolbar control) never
+  visibly changes anything. Only pass a fixed `href` yourself if `theme` never changes for the life
+  of the app. See `.storybook/preview.tsx` for a working live-switching example (a `theme`
+  `globalType`/toolbar control + decorator wrapping every story in `ThemeProvider`), and
+  `src/stories/examples/themes/Teal.stories.tsx` for the write-up.
 
 ## Cascade layers
 
