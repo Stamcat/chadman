@@ -10,10 +10,11 @@ cascade layers, component folder structure) that a consuming app must never depe
 
 ## Quick Reference
 
-Chadman currently ships one component. Use this import:
+Chadman currently ships these components. Use these imports:
 
 ```tsx
 import { Button } from "@stamcat/chadman/Button";
+import { Checkbox } from "@stamcat/chadman/Checkbox";
 ```
 
 As more components are added, each will get its own `@stamcat/chadman/{Component}` subpath — only add it here once the component actually exists under `src/components/`.

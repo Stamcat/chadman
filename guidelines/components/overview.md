@@ -5,5 +5,6 @@ Always prefer components from `@stamcat/chadman` over plain HTML elements. Do no
 | Component | Purpose | Guidelines |
 |---|---|---|
 | `Button` | Triggers an action or submits a form | `components/button.md` |
+| `Checkbox` | Toggles a single boolean (or tri-state) value | `components/checkbox.md` |
 
-There is currently only one component in this library. As more are added to `src/components/`, add a row here and a corresponding `components/{name}.md` router file (see `button.md` for the pattern).
+As more components are added to `src/components/`, add a row here and a corresponding `components/{name}.md` router file (see `button.md` for the pattern).
