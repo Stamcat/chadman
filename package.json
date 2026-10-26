@@ -1,6 +1,6 @@
 {
   "name": "@stamcat/chadman",
-  "version": "0.0.1-alpha.4",
+  "version": "0.0.1-alpha.5",
   "type": "module",
   "description": "A lightweight, atomic-design component library built on Base UI and Sass.",
   "license": "MIT",
