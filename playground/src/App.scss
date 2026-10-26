@@ -1,0 +1,31 @@
+@use "@stamcat/chadman/styles/tokens";
+
+.app {
+  display: flex;
+  min-height: 100svh;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+
+  &__title {
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+
+  &__row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  &__checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    cursor: pointer;
+  }
+}
