@@ -12,6 +12,8 @@ Props:
 - `variant?: "default" | "outline" | "secondary" | "ghost" | "destructive" | "link"` (default: `"default"`)
 - `size?: "default" | "xs" | "sm" | "lg" | "icon" | "icon-xs" | "icon-sm" | "icon-lg" | number` (default: `"default"`)
 
+Before passing `className`/`style`, read `setup.md`'s "Styling model" section (applies to every component, not just `Button`) — it explains why Tailwind-style class strings don't work here and how to override tokens correctly.
+
 Behavior notes:
 
 - `type` defaults to `"button"` (inherited from the native element, not set explicitly by this component).

@@ -59,6 +59,16 @@ Every token has a matching `!default` Sass variable (light value as `$token-name
 
 Chadman uses Sass + plain CSS custom properties, not Tailwind. A token name like `--primary` or `--radius-lg` doesn't describe *when* to use it the way a Tailwind utility class does (`bg-brand-primary` tells you both the value and the intent in the class name itself). With `var(--token)`, that intent has to be documented explicitly, or it's lost. Use the decision tables below instead of guessing from a token's name alone.
 
+### Styling model
+
+This applies to every component in the catalog, not just the one you're currently reading about:
+
+- There is no Tailwind and no utility classes — do NOT pass Tailwind-style class strings (e.g. `className="bg-blue-500 px-4"`) to any component's `className` prop, they do nothing. Visual styling comes entirely from each component's own BEM classes (e.g. `button`, `button--default`, `button--size-sm`) plus `var(--token-name)` CSS custom properties.
+- Never hardcode a color/radius value (hex, rgb, raw px for radius) in a `style` override — use `var(--token-name)` from the tables below, picking the token by intent, not by what looks closest.
+- To restyle a single instance, prefer `style={{ "--primary": "...", "--primary-foreground": "..." }}` (overriding the CSS variables the component already reads) over fighting its built-in classes with `!important`-style overrides.
+- For an app-wide/brand-wide restyle instead of a one-off instance, use `ThemeProvider` (see "Runtime theming" above) rather than per-instance `style` overrides.
+- A component's own `className` prop is appended after its built-in classes (see that component's `AGENTS.md` for the exact merge order), so a custom class can add non-conflicting styles, but it cannot "turn off" a variant's built-in colors — switch that component's `variant`/equivalent prop instead.
+
 **Backgrounds:**
 
 | Token | When to reach for it |
