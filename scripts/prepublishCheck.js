@@ -25,8 +25,12 @@ const AGENT_DOC_GLOBS = ["AGENTS.md", "README.md", "skills/**/*.md", "src/compon
 const KNOWN_THIRD_PARTY_SCOPES = [
     "@floating-ui/react-dom",
     "@storybook/addon-docs",
+    "@storybook/addon-a11y",
     "@atlaskit/pragmatic-drag-and-drop",
     "@wojtekmaj/react-daterange-picker",
+    "@base-ui/react",
+    "@vitejs/plugin-react",
+    "@vitejs/plugin-react-swc",
 ];
 const scopedPackageRegex = /@[\w.-]+\/[\w-]+/g;
 
