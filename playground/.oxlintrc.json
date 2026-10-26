@@ -1,0 +1,44 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["react", "typescript", "oxc", "jsx-a11y", "import"],
+  "rules": {
+    "react/rules-of-hooks": "error",
+    "react/exhaustive-deps": "warn",
+    "react/only-export-components": ["warn", { "allowConstantExport": true }],
+    "no-console": "error",
+    "curly": "error",
+    "jsx-a11y/alt-text": "error",
+    "jsx-a11y/anchor-is-valid": "error",
+    "jsx-a11y/click-events-have-key-events": "error",
+    "jsx-a11y/no-static-element-interactions": "error",
+    "jsx-a11y/label-has-associated-control": "error",
+    "jsx-a11y/aria-props": "error",
+    "no-restricted-imports": [
+      "error",
+      {
+        "paths": [
+          {
+            "name": "styled-components",
+            "message": "Chadman styles with Sass/BEM (SCSS variables), not CSS-in-JS. Style with a plain .scss file instead."
+          },
+          {
+            "name": "@emotion/react",
+            "message": "Chadman styles with Sass/BEM (SCSS variables), not CSS-in-JS. Style with a plain .scss file instead."
+          },
+          {
+            "name": "@emotion/styled",
+            "message": "Chadman styles with Sass/BEM (SCSS variables), not CSS-in-JS. Style with a plain .scss file instead."
+          },
+          {
+            "name": "tailwindcss",
+            "message": "Tailwind was removed from chadman. Use its SCSS variables (@stamcat/chadman/styles/tokens) instead of utility classes."
+          },
+          {
+            "name": "tailwind-merge",
+            "message": "Tailwind was removed from chadman. Use its SCSS variables (@stamcat/chadman/styles/tokens) instead of utility classes."
+          }
+        ]
+      }
+    ]
+  }
+}

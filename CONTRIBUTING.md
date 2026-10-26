@@ -59,5 +59,18 @@ than growing this file.
   buildPackage.ts`); run this before assuming a new component's subpath export/guideline-inlining
   wiring actually works.
 
+## Dependencies
+
+Every entry in `package.json`'s (and `playground/package.json`'s) `dependencies`/`devDependencies`
+is pinned to an exact version — no `^`, `~`, or `latest`. Pin to the exact version actually
+installed (check `node_modules/<pkg>/package.json` or `npm view <pkg> version` if unsure) when
+adding or upgrading a package.
+
+`package.json`'s `overrides`/`resolutions` blocks mirror `@stamcat/craftsman`'s (the sibling
+project this repo's tooling is patterned after): they redirect a long list of small transitive
+polyfill packages to their `@socketregistry/*` equivalents (hardened, Socket-audited replacements)
+plus a few specific pins (`glob`, `js-yaml`, `postcss`, `sharp`, `source-map-js`) for known
+advisories. Keep both repos' `overrides`/`resolutions` in sync when either adds/removes an entry.
+
 Run `type-check`, `lint`, and (if touching a component) `build-storybook` before finishing any
 library-contribution change.

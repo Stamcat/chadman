@@ -1,0 +1,27 @@
+{
+  "name": "chadman-playground",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Standalone test app for tuning this repo's dev config against what Figma Make actually generates for a Make kit. Not part of the published @stamcat/chadman package.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "oxlint"
+  },
+  "dependencies": {
+    "@stamcat/chadman": "file:../dist",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "6.1.2",
+    "oxlint": "1.88.0",
+    "sass": "1.106.1",
+    "typescript": "6.0.3",
+    "vite": "8.3.4"
+  }
+}
