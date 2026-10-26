@@ -13,6 +13,8 @@ dist-ssr
 storybook-static
 *.local
 
+shadcn-parity-report.md
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

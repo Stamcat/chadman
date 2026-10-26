@@ -1,0 +1,73 @@
+// Relies on the design tokens (CSS custom properties) defined globally in src/index.scss.
+@layer chadman-component {
+.message__group {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.message {
+  position: relative;
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+
+  &[data-align='end'] {
+    flex-direction: row-reverse;
+  }
+
+  &:has(.message__footer) .message__avatar {
+    transform: translateY(-2rem);
+  }
+
+  &[data-align='end'] .message__content > [data-slot] {
+    align-self: flex-end;
+  }
+
+  &[data-align='end'] .message__footer {
+    justify-content: flex-end;
+  }
+}
+
+.message__avatar {
+  display: flex;
+  width: fit-content;
+  min-width: 2rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-end;
+  overflow: hidden;
+  border-radius: 9999px;
+  background: var(--muted);
+}
+
+.message__content {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.625rem;
+  overflow-wrap: break-word;
+}
+
+.message__header,
+.message__footer {
+  display: flex;
+  max-width: 100%;
+  min-width: 0;
+  align-items: center;
+  padding-inline: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--muted-foreground);
+
+  &:has([data-variant='ghost']) {
+    padding-inline: 0;
+  }
+}
+}

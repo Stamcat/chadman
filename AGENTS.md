@@ -19,6 +19,12 @@ import { Checkbox } from "@stamcat/chadman/Checkbox";
 
 As more components are added, each will get its own `@stamcat/chadman/{Component}` subpath — only add it here once the component actually exists under `src/components/`.
 
+**Exception — AI Elements:** components under `src/components/ai/` (currently `Message`) are published under a grouped `./ai/{Name}` subpath instead of a flat `./{Name}` one, so the whole AI Elements tier stays under one `ai/` namespace as more of it is added:
+
+```tsx
+import { Message, MessageGroup, MessageAvatar, MessageContent, MessageHeader, MessageFooter } from "@stamcat/chadman/ai/Message";
+```
+
 Framework-agnostic helpers (including the logger — see `src/utilities/logging/AGENTS.md`) are published under the `./utilities` subpath:
 
 ```ts

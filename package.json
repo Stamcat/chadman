@@ -27,7 +27,8 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "npm run type-check:storybook && storybook build",
     "type-check": "tsc --noEmit",
-    "type-check:storybook": "tsc -p ./tsconfig-storybook.json --noEmit"
+    "type-check:storybook": "tsc -p ./tsconfig-storybook.json --noEmit",
+    "parity:shadcn": "tsx ./scripts/shadcnParity.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",

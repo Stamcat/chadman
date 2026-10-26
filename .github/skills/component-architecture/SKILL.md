@@ -29,9 +29,10 @@ relates to the consuming-app (`AGENTS.md`) and Figma Make (`guidelines/`) rulese
 
 ## Atomic design levels in chadman
 
-Chadman uses a six-level atomic design hierarchy. Every new component must be classified into one
-of these before it's built — the level drives its folder location, its barrel/export treatment,
-and (for the top two levels) its product scoping:
+Chadman uses a six-level atomic design hierarchy, plus one additional sibling tier (AI Elements,
+below). Every new component must be classified into one of these before it's built — the level
+drives its folder location, its barrel/export treatment, and (for the top two levels) its product
+scoping:
 
 | Level | Definition | Lives in |
 | --- | --- | --- |
@@ -48,6 +49,53 @@ any specific component has been decided. Don't treat them as a plan to build or 
 products; substitute whatever products/components are actually being built at the time.
 
 `Button` lives at `src/components/atoms/Button/` and is the reference layout for new atoms.
+
+Folder naming: any multi-word subfolder name under `src/components/` or `src/stories/` (a
+product name, a tier name, etc.) uses camelCase, not kebab-case (e.g. `src/components/ai/`, not
+`src/components/ai-elements/`). This applies to this library's own source tree only — it does NOT
+govern `.github/skills/` folder names, which stay kebab-case (a separate, pre-existing convention
+for skill directories, left as-is).
+
+### AI Elements (sibling tier)
+
+shadcn/ui ships a separate section called "AI Elements" — patterns for building agentic/chat
+interfaces (`Message`, `Chat`, `Reasoning`, `Tool`, `Trace`, `Code Block`, etc.), composed from its
+regular registry components rather than a standalone package. These don't fit cleanly into the
+quarks→pages hierarchy above (a `Message` isn't a general-purpose atom/molecule, but it's also not
+product/page-specific), so they get their own sibling tier instead of being force-fit into an
+existing level:
+
+| Level | Definition | Lives in |
+| --- | --- | --- |
+| AI Elements | Components/patterns sourced from shadcn's AI Elements registry section (chat threads, messages, reasoning traces, tool calls, etc.) | `src/components/ai/{Name}/` |
+
+- Same shadcn-first rule applies, but the source is shadcn's AI Elements registry entries
+  specifically (`https://ui.shadcn.com/r/styles/{style}/{name}.json`), not the general component
+  registry. Several AI Elements "patterns" shown in shadcn's docs (Chat, Reasoning, Tool, Plan,
+  Chain of Thought, etc.) are hand-authored compositions of OTHER registry components (e.g. `Chat`
+  = `Message` turns inside a `Message Scroller`) with no dedicated registry JSON entry of their
+  own — for those, adapt the composition shown on shadcn's docs page by hand, same as any other
+  shadcn source.
+- Otherwise follows every convention below like atoms/molecules/organisms (folder layout, named
+  exports, SCSS/BEM, no `--{component}-size` scaling unless the component actually needs multiple
+  visual sizes, documentation checklist) — **except barrel/export wiring**, which IS special-cased
+  for this tier (see below). Storybook stories for this tier live under
+  `src/stories/ai/{Name}.stories.tsx` with a `title: "AI Elements/{Name}"`.
+- **Export exception:** AI Elements components are NOT added to `src/components/index.ts` (the
+  flat per-component barrel) and do NOT get a flat `./​{Name}` subpath. Instead they're barreled
+  together in `src/components/ai/index.ts` and each gets its own subpath grouped under one `ai/`
+  namespace (`./ai/{Name}`, e.g. `@stamcat/chadman/ai/Message`), wired via a dedicated
+  `EXPORTS.Ai = "components/ai"` entry in `exports.ts` (own Vite lib entry) and generated at build
+  time in `scripts/buildPackage.ts` (`getAiExports`/`buildSubpathExports` with an `"ai"` prefix) —
+  see Wiring below. This is the one deliberate exception to the "every component's import path is
+  flat, with no extra segment" rule; every other level still follows that rule, and within the `ai`
+  tier itself every component still gets its own individual subpath (just namespaced under `ai/`).
+- Not product-scoped (no `productTags.ts` entry) — AI Elements components are common/general-
+  purpose the same way atoms/molecules/organisms are, not per-product like templates/pages.
+- `Message` lives at `src/components/ai/Message/` and is the reference layout for this
+  tier (first AI Elements component ported, intentionally a thin first pass — it does not yet pull
+  in `Bubble`/`Tooltip`, which shadcn's own usage examples compose alongside it; see its
+  `AGENTS.md`).
 
 ## Folder-per-component
 
@@ -120,13 +168,19 @@ by none, so they need a lightweight way to record which products care about a gi
   (`export { Foo } from "./Foo/Foo";`) for quarks/atoms/molecules/organisms. This is the ONLY
   wiring step required for those levels — do not touch `exports.ts` or `vite.config.ts` for a
   plain new component.
+- **AI Elements exception:** add the component to `src/components/ai/index.ts` instead (NOT
+  `src/components/index.ts`) — that barrel is already wired to its own `EXPORTS.Ai` Vite lib entry,
+  so a new AI Elements component needs no further `exports.ts` or `vite.config.ts` changes either,
+  it just rides the existing `getAiExports()` scan in `scripts/buildPackage.ts`, which auto-
+  generates its `./ai/{Name}` subpath the same way `getComponentExports()` does for the flat tiers.
 - `scripts/buildPackage.ts`'s `getComponentExports()` regex-scans that barrel file at build time,
   reading each export's actual module path (not just its name), to auto-generate the matching
   `./{Name}` subpath entry in `dist/package.json`'s `exports` map — the published import path is
   always flat (`@stamcat/chadman/{Name}`), regardless of how deeply the component is nested
   (`atoms/Button/Button`, `templates/{product}/{Name}`, `pages/{product}/{Name}` all resolve to
   just `./{Name}`), which is why component names must be unique library-wide (see Folder-per-
-  component above).
+  component above). `getAiExports()` does the same scan against `src/components/ai/index.ts` and
+  prefixes each result with `ai/` instead.
   `inlineComponentGuidelines()` separately walks every folder under `src/components/` looking for
   an `AGENTS.md` and copies it into `dist/guidelines/components/{name}.md`, keyed by that folder's
   own name. Get the barrel export line and the folder name right and the rest follows

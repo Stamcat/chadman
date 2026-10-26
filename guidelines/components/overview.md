@@ -6,5 +6,6 @@ Always prefer components from `@stamcat/chadman` over plain HTML elements. Do no
 |---|---|---|
 | `Button` | Triggers an action or submits a form | `components/button.md` |
 | `Checkbox` | Toggles a single boolean (or tri-state) value | `components/checkbox.md` |
+| `Message` | One turn in a chat/agent thread (person's message or agent's reply) | `components/message.md` |
 
 As more components are added to `src/components/`, add a row here and a corresponding `components/{name}.md` router file (see `button.md` for the pattern).

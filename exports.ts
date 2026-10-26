@@ -3,6 +3,7 @@ export const EXPORTS = {
     Components: "components",
     Utilities: "utilities",
     Theme: "styles/theme",
+    Ai: "components/ai",
 } as const;
 
 export const PACKAGE_EXPORTS = {

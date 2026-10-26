@@ -11,59 +11,74 @@ const getComponentFolder = () => {
     return EXPORTS.Components;
 };
 
-const getComponentIndexPath = () => {
-    const componentFolder = getComponentFolder();
-
-    if (!componentFolder) {
+const getIndexPath = (folder: string | undefined) => {
+    if (!folder) {
         return undefined;
     }
 
-    return path.join(process.cwd(), "src", componentFolder, "index.ts");
+    return path.join(process.cwd(), "src", folder, "index.ts");
 };
 
 // Captures both the exported name and its module path (e.g. "./atoms/Button/Button") rather than
 // assuming a flat src/components/{Name}/{Name} layout, so nested folders (atoms/molecules/
 // organisms, and product-scoped templates/pages) resolve to the right subpath export on their own.
-const getComponentExports = () => {
-    const componentIndexPath = getComponentIndexPath();
-
-    if (!componentIndexPath || !fse.existsSync(componentIndexPath)) {
+// A single `from` clause may export multiple names (e.g. Message's MessageGroup/MessageContent/
+// etc. siblings) across one or more lines — the first name is used as the subpath key (it must
+// match the module's file name), since all names in the clause live in that same module and are
+// reachable through that one subpath regardless.
+const getExportsFromIndex = (indexPath: string | undefined) => {
+    if (!indexPath || !fse.existsSync(indexPath)) {
         return [] as { name: string; relativePath: string }[];
     }
 
-    const indexSource = fse.readFileSync(componentIndexPath, "utf-8");
-    const exportRegex = /^\s*export\s*\{\s*([A-Za-z0-9_]+)\s*\}\s*from\s*["']\.\/([^"']+)["'];?\s*$/gm;
+    const indexSource = fse.readFileSync(indexPath, "utf-8");
+    const exportRegex = /export\s*\{\s*([^}]+?)\s*\}\s*from\s*["']\.\/([^"']+)["'];?/g;
     const exports: { name: string; relativePath: string }[] = [];
     let match: RegExpExecArray | null = exportRegex.exec(indexSource);
 
     while (match) {
-        exports.push({ name: match[1], relativePath: match[2] });
+        const [firstName] = match[1]
+            .split(",")
+            .map((name) => name.trim())
+            .filter(Boolean);
+        if (firstName) {
+            exports.push({ name: firstName, relativePath: match[2] });
+        }
         match = exportRegex.exec(indexSource);
     }
     return exports;
 };
 
+const getComponentExports = () => getExportsFromIndex(getIndexPath(getComponentFolder()));
+
+// AI Elements (src/components/ai/) are the one tier published under a grouped `./ai/{Name}`
+// subpath instead of a flat `./{Name}` one — same per-component declaration-file wiring as
+// getComponentExports, just keyed under the `ai` folder and prefixed when building the exports map.
+const getAiExports = () => getExportsFromIndex(getIndexPath(EXPORTS.Ai));
+
 
 const createPackageJson = () => {
-    const buildExportsMap = (components: { name: string; relativePath: string }[]) => {
-        const componentsFolder = getComponentFolder();
+    const buildSubpathExports = (
+        folder: string,
+        components: { name: string; relativePath: string }[],
+        prefix?: string,
+    ) =>
+        components.reduce<Record<string, { types: string; default: string }>>((acc, { name, relativePath }) => {
+            acc[`./${prefix ? `${prefix}/` : ""}${name}`] = {
+                types: `./src/${folder}/${relativePath}.d.ts`,
+                default: `./src/${folder}/${relativePath}.esm.js`,
+            };
+            return acc;
+        }, {});
 
-        const subpathExports = components.reduce<Record<string, { types: string; default: string }>>(
-            (acc, { name, relativePath }) => {
-                acc[`./${name}`] = {
-                    types: `./src/${componentsFolder}/${relativePath}.d.ts`,
-                    default: `./src/${componentsFolder}/${relativePath}.esm.js`,
-                };
-                return acc;
-            },
-            {},
-        );
-
-        return {
-            ...PACKAGE_EXPORTS,
-            ...subpathExports,
-        };
-    };
+    const buildExportsMap = (
+        components: { name: string; relativePath: string }[],
+        aiComponents: { name: string; relativePath: string }[],
+    ) => ({
+        ...PACKAGE_EXPORTS,
+        ...buildSubpathExports(getComponentFolder(), components),
+        ...buildSubpathExports(EXPORTS.Ai, aiComponents, "ai"),
+    });
 
     // copy package file into destination folder
     const pkgSrc = path.join(process.cwd(), "package.json");
@@ -78,8 +93,9 @@ const createPackageJson = () => {
     const componentsFolder = getComponentFolder();
     sourceObj.types = `./src/${componentsFolder}/index.d.ts`;
     const componentExports = getComponentExports();
-    if (componentExports.length > 0) {
-        sourceObj.exports = buildExportsMap(componentExports);
+    const aiExports = getAiExports();
+    if (componentExports.length > 0 || aiExports.length > 0) {
+        sourceObj.exports = buildExportsMap(componentExports, aiExports);
     } else {
         delete sourceObj.exports;
     }
