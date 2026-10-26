@@ -1,6 +1,6 @@
 {
   "name": "@stamcat/chadman",
-  "version": "0.0.1-alpha.3",
+  "version": "0.0.1-alpha.4",
   "type": "module",
   "description": "A lightweight, atomic-design component library built on Base UI and Sass.",
   "license": "MIT",
@@ -11,6 +11,10 @@
   "homepage": "https://github.com/Stamcat/chadman#readme",
   "bugs": {
     "url": "https://github.com/Stamcat/chadman/issues"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   },
   "types": "index.d.ts",
   "main": "index.js",
