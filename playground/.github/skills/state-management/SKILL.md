@@ -1,45 +1,63 @@
 ---
 name: state-management
-description: 'Shared-state conventions for the playground app, standing in for Figma-Make-generated app code consuming @stamcat/chadman. Use when state needs to be read or set by more than one component — enforces a single namespaced store object instead of per-domain hooks.'
+description: 'Redux Toolkit + redux-saga conventions for the app standards — Redux by default, Context/thunks/composition/state-managed hooks opt-in only, colocated slice.ts/sagas.ts, wiring into src/redux/index.ts. Use when adding or reviewing state management anywhere in the repo.'
 ---
 
-# Playground State Management (consumer-side)
+# App Standards State Management
 
-Applies to playground app code (`playground/src/**`), which stands in for real Figma-Make-generated
-application code. Figma Make output doesn't use Redux Toolkit/redux-saga — it typically reaches
-for local `useState`/`useReducer`/`useContext`. This skill assumes that baseline and adds one rule
-on top of it.
+Applies to application code across the repo.
 
-## Don't thread props through components that don't own the state
+## Redux + redux-saga by default
 
-- State and setters local to a single component (and its direct, one-level children) can stay as
-  plain props — don't reach for a store for that.
-- Once a piece of state needs to be read or set by components more than one level apart, stop
-  passing it down as props at every intermediate layer.
+- Application code uses **Redux + redux-saga** by default.
+- Neither the Context API (`useContext`/`createContext`) nor thunks (`createAsyncThunk`,
+  `redux-thunk`) — nor other patterns like component composition or state-managed custom hooks —
+  are used out of the box, and none is encouraged: don't introduce any of them unprompted. All
+  remain available if a developer explicitly decides to use that pattern for a given area.
+- Once a developer has explicitly opted into one of these alternatives for an area, keep following
+  that choice for new work in that area — don't revert it back to Redux unprompted just because
+  Redux is the default.
 
-## One store object, not many `useXStore` hooks
+## Redux structure
 
-- There is exactly one store object for the whole app, not a separate hook per domain. Domains are
-  namespaced properties on that single object — `store.theme`, `store.dashboard` — not
-  `useThemeStore()`/`useDashboardStore()` scattered across unrelated files. This mimics a
-  Redux-style single source of truth (one store, combined slices) without requiring Redux itself.
-- A new shared-state domain is a new named key added to the existing store object
-  (`store.<domain>`), never a new standalone hook/context of its own.
-- Each `store.<domain>` slice exposes named values and named action functions
-  (`store.theme.setTheme`, `store.dashboard.toggleSidebar`) — not a raw `[value, setValue]` tuple,
-  and not every consuming component re-declaring its own copy of the same state.
-- Implement the single store with one `useContext`-backed (or module-scoped) provider at the app
-  root, composed from per-domain reducers/`useState` calls internally — the internals can be
-  split across files for organization, but components only ever import and read from the one
-  store object, never from a domain-specific hook.
+- Colocate a component's `slice.ts` and `sagas.ts` (plus `selectors.ts`/`types.ts` as needed)
+  inside the top-level component folder that owns that state.
+- Wire the reducer and sagas into `src/redux/index.ts`. Never import from a subfolder of
+  `src/redux` (e.g. `@/redux/feature/*`) — only `@/redux` (`src/redux/index.ts`) is a valid import
+  path from application code. Enforced by dependency-cruiser's `no-deep-redux-imports`.
 
-## Keep it as small as the actual sharing need
+## `distillers.ts` vs `selectors.ts`
 
-- Don't add a `store.<domain>` slice preemptively for state nothing outside its component reads
-  yet — this is a prop-drilling escape hatch, not a default architecture.
-- No external state library is required to satisfy this rule — plain `useContext` +
-  `useReducer`/`useState` composed into the single store object is sufficient.
+- `distillers.ts` (optional) holds **simple selectors only** — plain state reads (e.g. `(state) =>
+  state.feature.items`). No data manipulation (sorting, filtering, formatting, derivation) and no
+  memoization of any kind.
+- `selectors.ts` is where data manipulation for a UI component lives — sorting, filtering,
+  formatting, or otherwise reshaping redux values before a component consumes them. These
+  generally (not a hard rule) use `createSelector` for memoization.
+- Fallback/default values (empty strings, `0`, derived display strings) belong in a `selectors.ts`
+  selector, not in the component. If a component is doing `profile?.field ?? ""` or similar
+  null/nullish coalescing to make a value presentable, write or extend a selector that returns the
+  already-defaulted shape instead. The goal is a presentation layer that destructures plain values
+  with no coalescing or conditional fallback logic of its own.
+- Treat a multi-branch ternary chain or any "derived state" block spanning more than a couple of
+  lines in a component as a signal to move it into a memoized `selectors.ts` selector (via
+  `createSelector`), reading from `distillers.ts` for the raw state. The component should call
+  `useSelector(getSomething)` and destructure the result, not compute it inline.
 
-Not machine-enforced — check for prop-drilling, stray `useXStore` hooks, and "is this a
-store-worthy domain" in review.
+## `slice.ts` action naming: present tense vs past tense
 
+- An action a saga `takeLatest`s to kick off a side effect (e.g. an API call) is named in the
+  **present/imperative tense**: `loadClientProfile`, `loadClientScores`. It represents a request to
+  do something, not a fact about what already happened.
+- An action that merely records a state change — including ones a saga dispatches once its side
+  effect settles — is named in the **past tense**: `clientProfileLoaded`, `clientProfileLoadFailed`.
+  It represents something that already occurred.
+
+## Enforcement
+
+Redux + redux-saga as the default, and treating Context/thunks/composition/state-managed hooks as
+opt-in rather than banned, aren't machine-enforced — check for them in review.
+
+| Rule | Enforced by |
+| --- | --- |
+| No deep `src/redux/<folder>` imports | dependency-cruiser `no-deep-redux-imports` |

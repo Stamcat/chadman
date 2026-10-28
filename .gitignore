@@ -25,3 +25,4 @@ shadcn-parity-report.md
 *.njsproj
 *.sln
 *.sw?
+.codebase-memory

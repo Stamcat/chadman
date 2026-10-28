@@ -1,50 +1,59 @@
 ---
 name: accessibility
-description: 'Accessibility conventions for the playground app, standing in for Figma-Make-generated app code consuming @stamcat/chadman. Use when creating or editing any component/markup under playground/src/.'
+description: 'Accessibility (a11y) conventions for the app standards — semantic structure, keyboard/focus support, ARIA usage, color contrast. Use when creating or reviewing any application component, page, or piece of markup anywhere in the repo.'
 ---
 
-# Playground Accessibility (consumer-side)
+# App Standards Accessibility
 
-Applies to playground app code (`playground/src/**`), which stands in for real Figma-Make-generated
-application code. Every new or modified piece of markup here must be accessible — this is a
-requirement, not a follow-up task.
+Applies to application code across the repo.
 
-## Semantic structure and labels
+## Semantic structure first
 
-- Reach for semantic HTML5 elements (`main`, `nav`, `header`, `footer`, `section`, `h1`-`h6`,
-  `button`, `a`, `label`) before adding ARIA roles.
-- Every form control needs a programmatically associated label — either wrap it in a `<label>`
-  with a matching `htmlFor`/`id` pair, or use `aria-label`/`aria-labelledby`. Placeholder text is
-  never a substitute. See `playground/src/App.tsx`'s `<label htmlFor="subscribe">` +
-  `<Checkbox id="subscribe" />` pairing — prefer the explicit `htmlFor`/`id` form over bare
-  `<label>`-wraps-control, since `jsx-a11y/label-has-associated-control` doesn't reliably
-  recognize the wrapping form for non-native controls like chadman's Base-UI-backed `Checkbox`.
-- Icon-only buttons/links need an accessible name (visually-hidden text, `aria-label`, or
-  `aria-labelledby`) — check the component's own `AGENTS.md` for which sizes/variants require one
-  (e.g. chadman's `Button`/`Checkbox` docs).
+- Reach for semantic HTML5 elements (`main`, `nav`, `header`, `footer`, `section`, `article`,
+  `aside`, `h1`-`h6`, `button`, `a`, `label`, `ul`/`li`, `table`) before adding ARIA roles — see
+  [component-architecture](../component-architecture/SKILL.md) and [styling](../styling/SKILL.md)
+  for the related "don't add a class/wrapper you don't need" conventions. ARIA should supplement
+  semantic HTML, not replace it.
+- Every page/view needs exactly one `h1`; nested sections use a logical, non-skipping heading
+  order (`h2` inside `h1`, `h3` inside `h2`, ...) rather than choosing a heading level for its
+  visual size.
+- Use a native `<button>` for anything clickable that performs an action, and a native
+  `<a href>`/router `Link` for anything that navigates. Don't attach `onClick` to a `div`/`span`.
 
-## Prefer chadman's own accessible primitives
+## Forms and interactive elements
 
-- Chadman's components (Base UI-backed `Button`, `Checkbox`, etc.) already handle keyboard
-  operability, focus-visible styling, and ARIA state — use them instead of hand-rolling an
-  interactive widget. Only build a custom interactive control when chadman has no equivalent, and
-  in that case it must still be keyboard-reachable/operable and expose the relevant ARIA role/state.
-- Preserve a visible focus indicator; never suppress it with `outline: none` without an equivalent
-  focus style.
+- Every form control has a programmatically associated `<label>` (via `htmlFor`/`id`, or by
+  wrapping the control) — placeholder text is never a substitute for a label.
+- Icon-only buttons/links need an accessible name: visually-hidden text, `aria-label`, or
+  `aria-labelledby`. A bare icon with no text alternative is not acceptable.
+- Custom interactive widgets (anything not a native form control) must be reachable and operable
+  by keyboard alone (`Tab`/`Shift+Tab` to reach it, `Enter`/`Space` to activate it, arrow keys for
+  composite widgets like tabs/menus) and expose the relevant ARIA role/state (`aria-expanded`,
+  `aria-selected`, `aria-current`, etc.). Prefer the project's shared UI component library over
+  hand-rolling one of these — see
+  [styling](../styling/SKILL.md#prefer-a-shared-ui-component-library).
+- Preserve a visible focus indicator; never suppress it with `outline: none` without supplying an
+  equivalent focus style.
+
+## Dynamic content and feedback
+
+- Content that updates without a page navigation and needs to be noticed (errors, toasts, async
+  status messages) uses `aria-live` (`polite` for status updates, `assertive` only for urgent
+  errors) or a native mechanism (`role="alert"`/`role="status"`) rather than relying on visual
+  change alone.
+- Images convey their meaning via `alt` text; purely decorative images use `alt=""` so screen
+  readers skip them.
 
 ## Color and contrast
 
-- Don't convey meaning (errors, required fields, status) through color alone.
-- Style against chadman's `var(--background)`/`var(--foreground)`/etc. tokens rather than new
-  literal colors — they're already vetted for contrast, including in dark mode.
+- Don't convey meaning (errors, required fields, status) through color alone — pair it with text,
+  an icon with an accessible name, or both.
+- New text/background color pairs should meet WCAG AA contrast (4.5:1 for normal text, 3:1 for
+  large text/UI components). Prefer existing shared color variables, which are already vetted for
+  contrast, over introducing new literal colors.
 
 ## Enforcement
 
-| Rule | Enforced by |
-| --- | --- |
-| Missing alt text / unlabeled controls / non-keyboard-operable custom widgets | `playground/.oxlintrc.json`'s `jsx-a11y/*` rules |
-
-Color-contrast and "prefer chadman's primitives" aren't machine-enforced — check for them in
-review, the same as chadman's own
-[accessibility skill](../../../../.github/skills/accessibility/SKILL.md) leaves contrast
-verification to Storybook's addon-a11y panel rather than lint.
+These conventions aren't machine-enforced by ESLint/dependency-cruiser today — check for them in
+review, the same as the responsive-design conventions in
+[styling](../styling/SKILL.md#enforcement).
